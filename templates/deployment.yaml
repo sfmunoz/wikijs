@@ -68,9 +68,16 @@ spec:
           - mountPath: /wiki/data/sideload
             name: wiki-data-sideload
             readOnly: true
+          - mountPath: /wiki/config.yml
+            name: wiki-config
+            subPath: config.yml
+            readOnly: true
       volumes:
       - name: wiki-data-sideload
         emptyDir: {}
+      - name: wiki-config
+        secret:
+          secretName: {{ include "wikijs.fullname" . }}-config
       - name: wiki-localization
         hostPath:
           path: /opt/wiki-localization
