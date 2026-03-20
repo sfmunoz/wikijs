@@ -1,2 +1,21 @@
+#
+# Refs:
+# - https://docs.requarks.io/install/config
+# - https://github.com/requarks/wiki/blob/main/config.sample.yml
+#
+
+wikijs:
+  # /wiki/config.yml
+  config:
+    db:
+      type: postgres
+      host: postgres-rclone-main
+      port: 5432
+      user: wikijs
+      #pass: some-password
+      db: wiki
+    # https://docs.requarks.io/install/sideload
+    offline: true
+
 podLabels:
   app: wikijs
