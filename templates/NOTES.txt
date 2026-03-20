@@ -1,0 +1,8 @@
+Install/upgrade (example: namespace=dev, name=wiki)
+  $ helm upgrade --install -n <namespace> --create-namespace -f secrets://secrets.yaml <flags> <name> .
+Uninstall/cleanup:
+  $ helm uninstall -n {{ .Release.Namespace }} {{ .Release.Name }}
+  $ kubectl delete namespaces {{ .Release.Namespace }}
+Template:
+  $ helm install --dry-run --debug --disable-openapi-validation -f secrets://secrets.yaml -n {{ .Release.Namespace }} {{ .Release.Name }} .
+  $ helm template .
