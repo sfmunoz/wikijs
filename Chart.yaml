@@ -1,0 +1,12 @@
+# Install:
+#   $ helm upgrade --install -n dev --create-namespace wikijs .
+# Uninstall:
+#   $ helm uninstall -n dev wikijs
+#   $ kubectl delete namespaces dev
+
+apiVersion: v2
+name: wikijs
+description: wikijs
+type: application
+version: 0.0.1
+appVersion: "2.5.304"
