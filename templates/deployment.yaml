@@ -20,11 +20,58 @@ spec:
         - name: {{ .Chart.Name }}-init
           image: ghcr.io/requarks/wiki:{{ .Chart.AppVersion }}
           imagePullPolicy: IfNotPresent
-          command: ["/bin/sh","-c","sleep 10"]
+          command: ["/bin/bash","-c"]
+          args:
+          - |
+            #!/bin/bash
+            set -o pipefail
+            FOLDER="wiki-localization"
+            BNAME="6ae319554426796487988435d6c718c4b75db8c6.tar.gz"
+            FNAME="/${FOLDER}/${BNAME}"
+            URL="https://github.com/Requarks/wiki-localization/archive/${BNAME}"
+            SHA256SUM="006344c49e3872b5d619f90b84c0c4c1bc9b718abbff7968e0f1e91407852cb5"
+            set -x
+            date
+            if [ ! -f "${FNAME}" ]
+            then
+              curl -L "$URL" -o "$FNAME"
+              date
+            fi
+            echo "${SHA256SUM}  ${FNAME}" | sha256sum -c
+            if [ $? -ne 0 ]
+            then
+              rm -f "${FNAME}"
+              sleep $((5+RANDOM%5))
+              exit 1
+            fi
+            set -e
+            tar -xvz --strip-components 1 -C /wiki/data/sideload -f "${FNAME}"
+            date
+            chown -Rv node:node /wiki/data/sideload
+            date
           securityContext:
             runAsUser: 0
+            runAsGroup: 0
+          volumeMounts:
+          - mountPath: /wiki/data/sideload
+            name: wiki-data-sideload
+            readOnly: false
+          - mountPath: /wiki-localization
+            name: wiki-localization
+            readOnly: false
       containers:
         - name: {{ .Chart.Name }}
           image: ghcr.io/requarks/wiki:{{ .Chart.AppVersion }}
           imagePullPolicy: IfNotPresent
           command: ["/bin/sh","-c","exec tail -f /dev/null"]
+          volumeMounts:
+          - mountPath: /wiki/data/sideload
+            name: wiki-data-sideload
+            readOnly: true
+      volumes:
+      - name: wiki-data-sideload
+        emptyDir: {}
+      - name: wiki-localization
+        hostPath:
+          path: /opt/wiki-localization
+          type: DirectoryOrCreate
