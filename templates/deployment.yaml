@@ -16,6 +16,13 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
+      initContainers:
+        - name: {{ .Chart.Name }}-init
+          image: ghcr.io/requarks/wiki:{{ .Chart.AppVersion }}
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh","-c","sleep 10"]
+          securityContext:
+            runAsUser: 0
       containers:
         - name: {{ .Chart.Name }}
           image: ghcr.io/requarks/wiki:{{ .Chart.AppVersion }}
