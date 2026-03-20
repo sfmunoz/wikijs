@@ -63,7 +63,6 @@ spec:
         - name: {{ .Chart.Name }}
           image: ghcr.io/requarks/wiki:{{ .Chart.AppVersion }}
           imagePullPolicy: IfNotPresent
-          command: ["/bin/sh","-c","exec tail -f /dev/null"]
           volumeMounts:
           - mountPath: /wiki/data/sideload
             name: wiki-data-sideload
