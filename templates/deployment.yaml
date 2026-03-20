@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "wikijs.fullname" . }}
+  labels:
+    {{- include "wikijs.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "wikijs.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "wikijs.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: ghcr.io/requarks/wiki:{{ .Chart.AppVersion }}
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh","-c","exec tail -f /dev/null"]
