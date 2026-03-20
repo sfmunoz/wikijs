@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "wikijs.fullname" . }}
+  labels:
+    {{- include "wikijs.labels" . | nindent 4 }}
+spec:
+  rules:
+    - host: wiki.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "wikijs.fullname" . }}
+                port:
+                  number: 80
