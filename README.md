@@ -80,3 +80,8 @@ helm install -n <namespace> --create-namespace \
   -f secrets://secrets.yaml <name> \
   oci://ghcr.io/sfmunoz/wikijs --version <version>
 ```
+
+## Contributing
+
+Repository conventions and the development workflow for contributors and AI
+agents are defined in [AGENTS.md](AGENTS.md).
