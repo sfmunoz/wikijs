@@ -19,6 +19,7 @@ wikijs:
 
 ingress:
   hostname: wiki.local
+  secretName: wiki.local
 
 podLabels:
   app: wikijs
