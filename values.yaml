@@ -17,5 +17,8 @@ wikijs:
     # https://docs.requarks.io/install/sideload
     offline: true
 
+ingress:
+  hostname: wiki.local
+
 podLabels:
   app: wikijs

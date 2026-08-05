@@ -6,7 +6,7 @@ metadata:
     {{- include "wikijs.labels" . | nindent 4 }}
 spec:
   rules:
-    - host: wiki.local
+    - host: {{ required "ingress.hostname missing" .Values.ingress.hostname }}
       http:
         paths:
           - path: /
