@@ -8,7 +8,7 @@
 - Requires a PostgreSQL database
 - Runs in [offline/sideload mode](https://docs.requarks.io/install/sideload) — an init container downloads and verifies the localization bundle at startup
 - Configuration is stored as a Kubernetes Secret and mounted at `/wiki/config.yml`
-- Exposed via a ClusterIP Service and Ingress at `http://wiki.local`
+- Exposed via a ClusterIP Service and Ingress at `http://wiki.local` (by default)
 - Sensitive values (DB password) managed with [helm-secrets](https://github.com/jkroepke/helm-secrets) + [sops](https://github.com/getsops/sops) (age encryption)
 
 ## Prerequisites
@@ -31,6 +31,7 @@ Default values are in `values.yaml`. The database password must be provided via 
 | `wikijs.config.db.pass` | *(secrets.yaml)* | DB password |
 | `wikijs.config.db.db` | `wiki` | Database name |
 | `wikijs.config.offline` | `true` | Enable sideload/offline mode |
+| `ingress.hostname` | `wiki.local` | Ingress hostname |
 | `podLabels` | `app: wikijs` | Extra labels on pods |
 
 ## Usage
