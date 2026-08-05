@@ -16,3 +16,9 @@ spec:
                 name: {{ include "wikijs.fullname" . }}
                 port:
                   number: 80
+{{- if .Values.ingress.secretName }}
+  tls:
+    - hosts:
+        - {{ required "ingress.hostname missing" .Values.ingress.hostname }}
+      secretName: {{ .Values.ingress.secretName }}
+{{- end }}
