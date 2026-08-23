@@ -78,6 +78,5 @@ spec:
         secret:
           secretName: {{ include "wikijs.fullname" . }}-config
       - name: wiki-localization
-        hostPath:
-          path: /opt/wiki-localization
-          type: DirectoryOrCreate
+        persistentVolumeClaim:
+          claimName: {{ include "wikijs.fullname" . }}
