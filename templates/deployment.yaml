@@ -25,11 +25,11 @@ spec:
           - |
             #!/bin/bash
             set -o pipefail
-            FOLDER="wiki-localization"
+            FOLDER="wiki-locales-v2"
             BNAME="6ae319554426796487988435d6c718c4b75db8c6.tar.gz"
             FNAME="/${FOLDER}/${BNAME}"
-            URL="https://github.com/Requarks/wiki-localization/archive/${BNAME}"
-            SHA256SUM="006344c49e3872b5d619f90b84c0c4c1bc9b718abbff7968e0f1e91407852cb5"
+            URL="https://github.com/requarks/${FOLDER}/archive/${BNAME}"
+            SHA256SUM="a66dfa1e330387af5111ca6101d3e9040fbf29792e10cd48ca32b4821a48c450"
             set -x
             date
             if [ ! -f "${FNAME}" ]
@@ -56,8 +56,8 @@ spec:
           - mountPath: /wiki/data/sideload
             name: wiki-data-sideload
             readOnly: false
-          - mountPath: /wiki-localization
-            name: wiki-localization
+          - mountPath: /wiki-locales-v2
+            name: wiki-locales-v2
             readOnly: false
       containers:
         - name: {{ .Chart.Name }}
@@ -77,6 +77,6 @@ spec:
       - name: wiki-config
         secret:
           secretName: {{ include "wikijs.fullname" . }}-config
-      - name: wiki-localization
+      - name: wiki-locales-v2
         persistentVolumeClaim:
           claimName: {{ include "wikijs.fullname" . }}
