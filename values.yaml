@@ -17,9 +17,12 @@ wikijs:
     # https://docs.requarks.io/install/sideload
     offline: true
 
-ingress:
+route:
   hostname: wiki.local
-  secretName: wiki.local
+  parent:
+    name: https-8443
+    namespace: kube-system
+    sectionName: https
 
 podLabels:
   app: wikijs
