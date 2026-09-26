@@ -1,80 +1,71 @@
 # wikijs
 
-[Wiki.js](https://js.wiki/) Helm chart for deploying Wiki.js `2.5.304` to Kubernetes.
+Helm chart for Wiki.js `2.5.304` on Kubernetes.
 
-## Overview
+## What it deploys
 
-- Deploys Wiki.js using image `ghcr.io/requarks/wiki:2.5.304`
-- Requires a PostgreSQL database
-- Runs in [offline/sideload mode](https://docs.requarks.io/install/sideload) — an init container downloads and verifies the localization bundle at startup
-- Configuration is stored as a Kubernetes Secret and mounted at `/wiki/config.yml`
-- Exposed via a ClusterIP Service and Ingress at `http://wiki.local` (by default)
-- Sensitive values (DB password) managed with [helm-secrets](https://github.com/jkroepke/helm-secrets) + [sops](https://github.com/getsops/sops) (age encryption)
+- Wiki.js from `ghcr.io/requarks/wiki:2.5.304`
+- A ClusterIP Service and Gateway API `HTTPRoute`
+- A Secret-mounted `/wiki/config.yml`
+- A `128Mi` `local-path` PVC for the downloaded sideload localization bundle
+
+Wiki.js requires a reachable PostgreSQL database. The chart runs Wiki.js in
+[sideload mode](https://docs.requarks.io/install/sideload); its init container
+downloads and verifies the localization bundle at startup.
 
 ## Prerequisites
 
 - Helm 3
-- [helm-secrets](https://github.com/jkroepke/helm-secrets) plugin
-- [sops](https://github.com/getsops/sops) with an age key matching the recipient in `secrets.yaml`
-- A PostgreSQL instance reachable at the host configured in `values.yaml`
+- A Gateway API implementation with a parent Gateway matching `route.parent`
+- A PostgreSQL instance reachable from the cluster
+- A `local-path` storage class
+- [helm-secrets](https://github.com/jkroepke/helm-secrets), [sops](https://github.com/getsops/sops), and an age key for the encrypted `secrets.yaml`
 
 ## Configuration
 
-Default values are in `values.yaml`. The database password must be provided via `secrets.yaml` (sops-encrypted).
+Defaults are in `values.yaml`. Put `wikijs.config.db.pass` in the local,
+sops-encrypted `secrets.yaml`.
 
 | Value | Default | Description |
 |---|---|---|
 | `wikijs.config.db.type` | `postgres` | Database type |
-| `wikijs.config.db.host` | `postgres-rclone-main` | DB hostname |
-| `wikijs.config.db.port` | `5432` | DB port |
-| `wikijs.config.db.user` | `wikijs` | DB username |
-| `wikijs.config.db.pass` | *(secrets.yaml)* | DB password |
+| `wikijs.config.db.host` | `postgres-rclone-main` | Database host |
+| `wikijs.config.db.port` | `5432` | Database port |
+| `wikijs.config.db.user` | `wikijs` | Database user |
+| `wikijs.config.db.pass` | `secrets.yaml` | Database password |
 | `wikijs.config.db.db` | `wiki` | Database name |
-| `wikijs.config.offline` | `true` | Enable sideload/offline mode |
-| `ingress.hostname` | `wiki.local` | Ingress hostname |
-| `podLabels` | `app: wikijs` | Extra labels on pods |
+| `wikijs.config.offline` | `true` | Enable sideload mode |
+| `route.hostname` | `wiki.local` | HTTPRoute hostname |
+| `route.parent.name` | `https-8443` | Parent Gateway name |
+| `route.parent.namespace` | `kube-system` | Parent Gateway namespace |
+| `route.parent.sectionName` | `https` | Parent Gateway listener section |
+| `podLabels` | `app: wikijs` | Additional Pod labels |
 
 ## Usage
 
-**Render templates locally:**
 ```sh
+helm lint .
 helm template .
-```
 
-**Dry-run with debug:**
-```sh
-helm install --dry-run --debug --disable-openapi-validation \
-  -f secrets://secrets.yaml -n <namespace> <name> .
-```
-
-**Install / upgrade:**
-```sh
 helm upgrade --install -n <namespace> --create-namespace \
   -f secrets://secrets.yaml <name> .
-```
 
-**Uninstall:**
-```sh
 helm uninstall -n <namespace> <name>
-kubectl delete namespaces <namespace>
+kubectl delete namespace <namespace>
 ```
 
-## Releasing
+## Release
 
-The chart is published as an OCI artifact to GHCR. Push a `v*` tag to trigger the release workflow:
+Pushing a `v*` tag publishes the chart to GHCR. The tag without its `v` prefix
+becomes the chart version.
 
 ```sh
-git tag v1.0.0
-git push origin v1.0.0
+git tag v0.2.3
+git push origin v0.2.3
 ```
 
-The workflow (`.github/workflows/release.yaml`) packages the chart and pushes it to:
+Install a published version:
 
-```
-oci://ghcr.io/sfmunoz/wikijs
-```
-
-**Install from registry:**
 ```sh
 helm install -n <namespace> --create-namespace \
   -f secrets://secrets.yaml <name> \
@@ -83,5 +74,4 @@ helm install -n <namespace> --create-namespace \
 
 ## Contributing
 
-Repository conventions and the development workflow for contributors and AI
-agents are defined in [AGENTS.md](AGENTS.md).
+See [AGENTS.md](AGENTS.md) for repository conventions.
